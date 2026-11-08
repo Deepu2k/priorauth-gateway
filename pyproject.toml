@@ -1,0 +1,42 @@
+[build-system]
+requires = ["setuptools>=69"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "priorauth-gateway"
+version = "0.1.0"
+description = "Event-driven prior authorization gateway: FHIR-shaped requests, async processing with retries and a dead letter queue."
+readme = "README.md"
+requires-python = ">=3.11"
+license = { text = "MIT" }
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]
+markers = [
+  "integration: needs Postgres and RabbitMQ (Testcontainers, or TEST_DATABASE_URL / TEST_AMQP_URL)",
+  "e2e: runs against a live stack at E2E_BASE_URL (docker compose up)",
+]
+addopts = "-ra"
+filterwarnings = ["ignore::DeprecationWarning"]
+
+[tool.ruff]
+line-length = 120
+target-version = "py311"
+src = ["src", "tests"]
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "B", "UP", "S", "SIM"]
+ignore = ["S101", "B008"]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**" = ["S105", "S106", "S311"]
+"scripts/**" = ["S", "T201"]
+"src/priorauth/mock_payer/**" = ["S311"]
+
+[tool.coverage.run]
+source = ["priorauth"]
+omit = ["*/__main__.py"]
