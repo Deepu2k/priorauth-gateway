@@ -19,7 +19,7 @@ from fastapi.testclient import TestClient
 from sqlalchemy import create_engine, text
 
 from priorauth import config, db
-from priorauth.queue import DLQ, QUEUE, RETRY_QUEUE
+from priorauth.queue import DLQ, QUEUE, retry_queue
 
 RETRY_DELAY_MS = 300
 PAYER_TIMEOUT = 0.5
@@ -61,7 +61,7 @@ def migrated(infra):
 
     conn = pika.BlockingConnection(pika.URLParameters(amqp_url))
     ch = conn.channel()
-    for q in (QUEUE, RETRY_QUEUE, DLQ):  # retry TTL is a queue argument, so redeclare fresh
+    for q in (QUEUE, retry_queue(RETRY_DELAY_MS), DLQ):  # start from empty queues
         ch.queue_delete(q)
     conn.close()
     return db_url, amqp_url

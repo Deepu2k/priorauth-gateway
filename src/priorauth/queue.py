@@ -1,16 +1,17 @@
 """RabbitMQ topology and publishing.
 
     priorauth (direct exchange)
-      "request" -> priorauth.requests        work queue; rejected messages dead-letter to "dead"
-      "retry"   -> priorauth.requests.retry  no consumer; messages wait RETRY_DELAY_MS, then
-                                             dead-letter back to "request" for the next attempt
-      "dead"    -> priorauth.requests.dlq    the dead letter queue, kept for inspection
+      "request"      -> priorauth.requests              work queue; rejected messages dead-letter to "dead"
+      "retry.5000ms" -> priorauth.requests.retry.5000ms  no consumer; messages wait RETRY_DELAY_MS, then
+                                                         dead-letter back to "request" for the next attempt
+      "dead"         -> priorauth.requests.dlq          the dead letter queue, kept for inspection
 
 The worker counts attempts in the `x-attempt` header. After MAX_ATTEMPTS failures it publishes to
 "dead" with the last error in `x-last-error`.
 
-Note: the retry delay is a queue argument. Changing RETRY_DELAY_MS on an existing broker needs the
-retry queue deleted first (RabbitMQ refuses to redeclare a queue with different arguments).
+The delay is in the retry queue's name and routing key because it is a queue argument, and RabbitMQ
+refuses to redeclare a queue with different arguments. So changing RETRY_DELAY_MS creates a new retry
+queue instead of breaking startup; anything left in the old one still expires back to the work queue.
 """
 
 import json
@@ -27,12 +28,20 @@ from priorauth import telemetry
 
 EXCHANGE = "priorauth"
 QUEUE = "priorauth.requests"
-RETRY_QUEUE = "priorauth.requests.retry"
+RETRY_QUEUE_PREFIX = "priorauth.requests.retry"
 DLQ = "priorauth.requests.dlq"
 RK_REQUEST, RK_RETRY, RK_DEAD = "request", "retry", "dead"
 
 ATTEMPT_HEADER = "x-attempt"
 LAST_ERROR_HEADER = "x-last-error"
+
+
+def retry_queue(retry_delay_ms: int) -> str:
+    return f"{RETRY_QUEUE_PREFIX}.{retry_delay_ms}ms"
+
+
+def retry_routing_key(retry_delay_ms: int) -> str:
+    return f"{RK_RETRY}.{retry_delay_ms}ms"
 
 
 def declare_topology(channel: BlockingChannel, retry_delay_ms: int) -> None:
@@ -43,7 +52,7 @@ def declare_topology(channel: BlockingChannel, retry_delay_ms: int) -> None:
         arguments={"x-dead-letter-exchange": EXCHANGE, "x-dead-letter-routing-key": RK_DEAD},
     )
     channel.queue_declare(
-        RETRY_QUEUE,
+        retry_queue(retry_delay_ms),
         durable=True,
         arguments={
             "x-message-ttl": retry_delay_ms,
@@ -53,7 +62,7 @@ def declare_topology(channel: BlockingChannel, retry_delay_ms: int) -> None:
     )
     channel.queue_declare(DLQ, durable=True)
     channel.queue_bind(QUEUE, EXCHANGE, RK_REQUEST)
-    channel.queue_bind(RETRY_QUEUE, EXCHANGE, RK_RETRY)
+    channel.queue_bind(retry_queue(retry_delay_ms), EXCHANGE, retry_routing_key(retry_delay_ms))
     channel.queue_bind(DLQ, EXCHANGE, RK_DEAD)
 
 

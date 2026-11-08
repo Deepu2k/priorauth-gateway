@@ -254,7 +254,7 @@
             "type": "prometheus",
             "uid": "prometheus"
           },
-          "expr": "sum(rabbitmq_queue_messages{queue=\"priorauth.requests.retry\"})",
+          "expr": "sum(rabbitmq_queue_messages{queue=~\"priorauth.requests.retry.*\"})",
           "instant": true
         }
       ],

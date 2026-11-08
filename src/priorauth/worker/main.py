@@ -27,6 +27,7 @@ from priorauth.queue import (
     build_properties,
     declare_topology,
     encode,
+    retry_routing_key,
 )
 from priorauth.worker.processor import Outcome, Processor, Result
 
@@ -83,6 +84,8 @@ class Consumer:
             span.set_attribute("priorauth.outcome", result.outcome.value)
 
             routing_key, next_attempt = route(result, attempt)
+            if routing_key == RK_RETRY:
+                routing_key = retry_routing_key(self.settings.retry_delay_ms)
             if routing_key is not None:
                 extra = {LAST_ERROR_HEADER: (result.error or "")[:500]}
                 ch.basic_publish(
