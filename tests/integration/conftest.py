@@ -37,8 +37,8 @@ def infra():
     if db_url and amqp_url:
         yield db_url, amqp_url
         return
-    from testcontainers.postgres import PostgresContainer
-    from testcontainers.rabbitmq import RabbitMqContainer
+    from testcontainers.community.postgres import PostgresContainer
+    from testcontainers.community.rabbitmq import RabbitMqContainer
 
     with (
         PostgresContainer("postgres:16-alpine", driver="psycopg") as pg,
