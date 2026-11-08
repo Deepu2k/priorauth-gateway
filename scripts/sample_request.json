@@ -1,0 +1,29 @@
+{
+  "patient": {
+    "resourceType": "Patient",
+    "identifier": [{ "system": "urn:fake:mrn", "value": "FAKE-MRN-0001" }],
+    "name": [{ "family": "Testpatient", "given": ["Jane"] }],
+    "gender": "female",
+    "birthDate": "1980-04-12"
+  },
+  "coverage": {
+    "resourceType": "Coverage",
+    "status": "active",
+    "subscriberId": "FAKE-SUB-1001",
+    "payor": [{ "display": "Mock Health Plan" }]
+  },
+  "serviceRequest": {
+    "resourceType": "ServiceRequest",
+    "status": "active",
+    "intent": "order",
+    "priority": "routine",
+    "code": {
+      "coding": [
+        { "system": "http://www.ama-assn.org/go/cpt", "code": "72148", "display": "MRI lumbar spine without contrast" }
+      ]
+    },
+    "reasonCode": [
+      { "coding": [{ "system": "http://hl7.org/fhir/sid/icd-10-cm", "code": "M54.50", "display": "Low back pain, unspecified" }] }
+    ]
+  }
+}
