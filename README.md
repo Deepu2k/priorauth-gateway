@@ -139,7 +139,7 @@ or Swagger UI at `/docs` while the stack runs. Invalid requests get a 422 with a
 
 | Layer       | What it checks | Tool | Count |
 | ----------- | -------------- | ---- | ----- |
-| Unit        | Validation rules, status transitions, retry and DLQ decisions, auth and roles, HTTP clients, mock health plan, trace propagation. Database, queue and HTTP mocked. | pytest, `unittest.mock`, `httpx.MockTransport` | 104 |
+| Unit        | Validation rules, status transitions, retry and DLQ decisions, auth and roles, HTTP clients, mock health plan, trace propagation. Database, queue and HTTP mocked. | pytest, `unittest.mock`, `httpx.MockTransport` | 105 |
 | Integration | API, worker, Postgres and RabbitMQ together: approval, denial, **three timeouts → DLQ**, flaky recovery, permanent errors, FHIR lookup, duplicate and poison messages, DB constraints. | pytest + Testcontainers | 11 |
 | End to end  | The running docker-compose stack through public endpoints only. | pytest + httpx | 6 |
 | CI          | All of the above on every push, plus lint, the Docker image build and `terraform validate`. | GitHub Actions | |

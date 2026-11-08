@@ -17,3 +17,16 @@ PAYER_LATENCY = Histogram(
 )
 HTTP_REQUESTS = Counter("priorauth_http_requests_total", "HTTP requests to the API", ["method", "route", "status"])
 HTTP_LATENCY = Histogram("priorauth_http_request_seconds", "API latency", ["method", "route"])
+
+# Create the known label sets at 0, so the first approval or failure shows up in rate() and increase()
+# (Prometheus cannot compute an increase for a series whose first sample is already 1).
+for _d in ("approved", "denied"):
+    DECISIONS.labels(_d)
+for _o in ("approved", "denied", "timeout", "unreachable", "error"):
+    ATTEMPTS.labels(_o)
+    PAYER_LATENCY.labels(_o)
+for _r in ("retries_exhausted", "permanent_error", "enqueue_failed"):
+    REQUESTS_FAILED.labels(_r)
+for _r in ("retries_exhausted", "permanent_error", "unparseable", "unknown_request"):
+    DEAD_LETTERED.labels(_r)
+REQUESTS_REJECTED.labels("validation")
