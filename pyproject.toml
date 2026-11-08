@@ -20,7 +20,7 @@ markers = [
   "integration: needs Postgres and RabbitMQ (Testcontainers, or TEST_DATABASE_URL / TEST_AMQP_URL)",
   "e2e: runs against a live stack at E2E_BASE_URL (docker compose up)",
 ]
-addopts = "-ra"
+addopts = "-ra -m \"not e2e\""
 filterwarnings = ["ignore::DeprecationWarning"]
 
 [tool.ruff]

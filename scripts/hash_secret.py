@@ -1,6 +1,6 @@
 """Print the sha256 of a password or API key, for DEMO_USERS / API_KEYS.
 
-    python scripts/hash_secret.py 'my-new-api-key'
+python scripts/hash_secret.py 'my-new-api-key'
 """
 
 import hashlib
