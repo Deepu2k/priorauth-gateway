@@ -1,6 +1,6 @@
 # PriorAuth Gateway
 
-[![CI](https://github.com/Deepu2k/priorauth-gateway/actions/workflows/ci.yml/badge.svg)](https://github.com/YOUR_GITHUB_USERNAME/priorauth-gateway/actions/workflows/ci.yml)
+[![CI](https://github.com/Deepu2k/priorauth-gateway/actions/workflows/ci.yml/badge.svg)](https://github.com/Deepu2k/priorauth-gateway/actions/workflows/ci.yml)
 
 A small event-driven service that takes a FHIR-shaped prior authorization request, queues it, sends
 it to a (mock) health plan, and lets you check the result. Python, FastAPI, PostgreSQL, RabbitMQ,
