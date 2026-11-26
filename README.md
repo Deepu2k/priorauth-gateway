@@ -201,7 +201,7 @@ migrations/       Alembic
 tests/            unit / integration / e2e
 docker/           Prometheus, Grafana and RabbitMQ config
 infra/terraform/  AWS version
-docs/             runbook, interview notes, OpenAPI
+docs/             runbook, OpenAPI
 ```
 
 ## What I would add next
